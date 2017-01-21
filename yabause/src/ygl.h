@@ -503,6 +503,7 @@ typedef struct {
     GLuint default_fbo;
    YglPerLineInfo bg[enBGMAX];
    u32 targetfbo;
+   int vpd1_running;
 }  Ygl;
 
 extern Ygl * _Ygl;
