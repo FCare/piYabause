@@ -4726,7 +4726,7 @@ void VIDOGLVdp1PolygonDraw(u8 * ram, Vdp1 * regs, u8* back_framebuffer)
      *texture.textdata = SAT2YAB1(alpha, color);
 
    }else{
-     *texture.textdata = Vdp1ReadPolygonColor(&cmd);
+     *texture.textdata = alpha << 24 | Vdp1ReadPolygonColor(&cmd);
    }
 }
 
