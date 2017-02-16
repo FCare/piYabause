@@ -70,7 +70,7 @@ void YabSetError(int type, const void *extra)
       case YAB_ERR_SH2INVALIDOPCODE:
          sh = (SH2_struct *)extra;
          SH2GetRegisters(sh, &sh->regs);
-         sprintf(tempstr, "%s SH2 invalid opcode\n\n"
+         sprintf(tempstr, "%s SH2 invalid opcode 0x%x\n\n"
                           "R0 =  %08lX\tR12 =  %08lX\n"
                           "R1 =  %08lX\tR13 =  %08lX\n"
                           "R2 =  %08lX\tR14 =  %08lX\n"
@@ -82,7 +82,7 @@ void YabSetError(int type, const void *extra)
                           "R8 =  %08lX\tMACL = %08lX\n"
                           "R9 =  %08lX\tPR =   %08lX\n"
                           "R10 = %08lX\tPC =   %08lX\n"
-                          "R11 = %08lX\n", sh->isslave ? "Slave" : "Master",
+                          "R11 = %08lX\n", sh->isslave ? "Slave" : "Master", sh->instruction,
                           (long)sh->regs.R[0], (long)sh->regs.R[12],
                           (long)sh->regs.R[1], (long)sh->regs.R[13],
                           (long)sh->regs.R[2], (long)sh->regs.R[14],
