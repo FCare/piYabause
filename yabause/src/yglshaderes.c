@@ -121,7 +121,7 @@ void Ygl_Vdp1CommonGetUniformId(GLuint pgid, YglVdp1CommonParam * param){
   param->fbowidth = glGetUniformLocation(pgid, (const GLchar *)"u_fbowidth");
   param->fboheight = glGetUniformLocation(pgid, (const GLchar *)"u_fbohegiht");
   param->mtxModelView = glGetUniformLocation(pgid, (const GLchar *)"u_mvpMatrix");
-  param->mtxTexture = glGetUniformLocation(pgid, (const GLchar *)"u_texMatrfix");
+  param->mtxTexture = glGetUniformLocation(pgid, (const GLchar *)"u_texMatrix");
   param->tex0 = glGetUniformLocation(pgid, (const GLchar *)"s_texture");
 }
 
