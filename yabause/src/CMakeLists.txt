@@ -526,7 +526,7 @@ message(STATUS "CMAKE_SYSTEM_PROCESSOR ${CMAKE_SYSTEM_PROCESSOR}")
 if (CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 6.0)
 	option(SH2_DYNAREC "SH2 dynamic recompiler" OFF)
 else ()
-	option(SH2_DYNAREC "SH2 dynamic recompiler" ON)
+	option(SH2_DYNAREC "SH2 dynamic recompiler" OFF)
 endif()
 
 if (SH2_DYNAREC)
