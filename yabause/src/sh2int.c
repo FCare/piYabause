@@ -1247,7 +1247,7 @@ static void FASTCALL SH2mova(SH2_struct * sh)
 {
    s32 disp = INSTRUCTION_CD(sh->instruction);
 
-   sh->regs.R[0]=((sh->regs.PC+4)&0xFFFFFFFC)+(disp<<2);
+   sh->regs.R[0]=(sh->regs.PC&0xFFFFFFFC)+4+(disp<<2);
    sh->regs.PC+=2;
    sh->cycles++;
 }
@@ -1390,7 +1390,7 @@ static void FASTCALL SH2movli(SH2_struct * sh)
    s32 disp = INSTRUCTION_CD(sh->instruction);
    s32 n = INSTRUCTION_B(sh->instruction);
 
-   sh->regs.R[n] = MappedMemoryReadLong(((sh->regs.PC + 4) & 0xFFFFFFFC) + (disp << 2));
+   sh->regs.R[n] = MappedMemoryReadLong((sh->regs.PC & 0xFFFFFFFC) + 4 + (disp << 2));
    sh->regs.PC += 2;
    sh->cycles++;
 }
