@@ -2073,6 +2073,20 @@ static void FASTCALL SH2stcmvbr(SH2_struct * sh)
    sh->cycles += 2;
 }
 
+static void FASTCALL SH2movi20(SH2_struct * sh)
+{
+  s32 n = INSTRUCTION_B(sh->instruction);
+  s32 i = INSTRUCTION_C(sh->instruction) << 16 | (fetchlist[((sh->regs.PC+2) >> 20) & 0x0FF](sh->regs.PC+2) & 0xFFFF);
+
+  if ((i & 0x00080000) == 0)
+    sh->regs.R[n] = (0x000FFFFF & (long)i);
+  else
+    sh->regs.R[n] = (0xFFF00000 | (long)i);
+
+  sh->regs.PC += 4;
+
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 static void FASTCALL SH2stcsr(SH2_struct * sh)
@@ -2417,6 +2431,8 @@ static opcodefunc decode(u16 instruction)
       case 0:
          switch (INSTRUCTION_D(instruction))
          {
+	    case 0:
+		return &SH2movi20;
             case 2:
                switch (INSTRUCTION_C(instruction))
                {
