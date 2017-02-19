@@ -156,6 +156,46 @@ joymapping_struct joyMapping[MAPPING_NB] = {
    },
 };
 
+#define KEYPAD(key, player) ((player << 17)|key)
+
+static void KeyInit() {
+  void * padbits;
+
+  PerPortReset();
+  padbits = PerPadAdd(&PORTDATA1);
+
+  PerSetKey(KEYPAD(PERPAD_UP, 0), PERPAD_UP, padbits);
+  PerSetKey(KEYPAD(PERPAD_RIGHT, 0), PERPAD_RIGHT, padbits);
+  PerSetKey(KEYPAD(PERPAD_DOWN, 0), PERPAD_DOWN, padbits);
+  PerSetKey(KEYPAD(PERPAD_LEFT, 0), PERPAD_LEFT, padbits);
+  PerSetKey(KEYPAD(PERPAD_RIGHT_TRIGGER, 0), PERPAD_RIGHT_TRIGGER, padbits);
+  PerSetKey(KEYPAD(PERPAD_LEFT_TRIGGER, 0), PERPAD_LEFT_TRIGGER, padbits);
+  PerSetKey(KEYPAD(PERPAD_START, 0), PERPAD_START, padbits);
+  PerSetKey(KEYPAD(PERPAD_A, 0), PERPAD_A, padbits);
+  PerSetKey(KEYPAD(PERPAD_B, 0), PERPAD_B, padbits);
+  PerSetKey(KEYPAD(PERPAD_C, 0), PERPAD_C, padbits);
+  PerSetKey(KEYPAD(PERPAD_X, 0), PERPAD_X, padbits);
+  PerSetKey(KEYPAD(PERPAD_Y, 0), PERPAD_Y, padbits);
+  PerSetKey(KEYPAD(PERPAD_Z, 0), PERPAD_Z, padbits);
+
+  padbits = PerPadAdd(&PORTDATA2);
+
+  PerSetKey(KEYPAD(PERPAD_UP, 1), PERPAD_UP, padbits);
+  PerSetKey(KEYPAD(PERPAD_RIGHT, 1), PERPAD_RIGHT, padbits);
+  PerSetKey(KEYPAD(PERPAD_DOWN, 1), PERPAD_DOWN, padbits);
+  PerSetKey(KEYPAD(PERPAD_LEFT, 1), PERPAD_LEFT, padbits);
+  PerSetKey(KEYPAD(PERPAD_RIGHT_TRIGGER, 1), PERPAD_RIGHT_TRIGGER, padbits);
+  PerSetKey(KEYPAD(PERPAD_LEFT_TRIGGER, 1), PERPAD_LEFT_TRIGGER, padbits);
+  PerSetKey(KEYPAD(PERPAD_START, 1), PERPAD_START, padbits);
+  PerSetKey(KEYPAD(PERPAD_A, 1), PERPAD_A, padbits);
+  PerSetKey(KEYPAD(PERPAD_B, 1), PERPAD_B, padbits);
+  PerSetKey(KEYPAD(PERPAD_C, 1), PERPAD_C, padbits);
+  PerSetKey(KEYPAD(PERPAD_X, 1), PERPAD_X, padbits);
+  PerSetKey(KEYPAD(PERPAD_Y, 1), PERPAD_Y, padbits);
+  PerSetKey(KEYPAD(PERPAD_Z, 1), PERPAD_Z, padbits);
+
+}
+
 int requestExit = 0;
 int toggle = 0;
 int service = 0;
@@ -248,6 +288,7 @@ static int LinuxJoyInit(perlinuxjoy_struct * joystick, const char * path, int id
    char name[128];
    struct js_event evt;
    ssize_t num_read;
+
    joystick->fd = open(path, O_RDONLY | O_NONBLOCK);
    if (joystick->fd == -1) return -1;
    if (ioctl(joystick->fd, JSIOCGNAME(sizeof(name)), name) < 0)
@@ -273,11 +314,14 @@ static int LinuxJoyInit(perlinuxjoy_struct * joystick, const char * path, int id
    }
 
    if (joystick->axiscount > MAXAXIS) joystick->axiscount = MAXAXIS;
+
    joystick->axis = malloc(sizeof(int) * joystick->axiscount);
    for(i = 0;i < joystick->axiscount;i++)
    {
       joystick->axis[i] = axisinit[i];
    }
+
+   KeyInit();
    return 0;
 }
 
@@ -379,7 +423,9 @@ int PERLinuxJoyInit(void)
    int fd;
    int j=0;
    glob_t globbuf;
+
    glob("/dev/input/js*", 0, NULL, &globbuf);
+
    joycount = globbuf.gl_pathc;
    joysticks = calloc(sizeof(perlinuxjoy_struct), joycount);
    for(i = 0;i < globbuf.gl_pathc;i++) {
@@ -388,6 +434,7 @@ int PERLinuxJoyInit(void)
    }
    joycount = j;
    globfree(&globbuf);
+
    return 0;
 }
 
@@ -408,6 +455,7 @@ void PERLinuxJoyDeInit(void)
 int PERLinuxJoyHandleEvents(void)
 {
    int i;
+
    for(i = 0;i < joycount;i++)
       LinuxJoyHandleEvents(joysticks + i);
 
