@@ -3694,6 +3694,8 @@ u8 Cs2GetIP(int autoregion) {
          cdip->firstprogsize = (buf[0xF4] << 24) | (buf[0xF5] << 16) |
                                (buf[0xF6] << 8) | buf[0xF7];
 
+printf("0x%x 0x%x 0x%x\n", cdip->ipsize, cdip->firstprogaddr, cdip->ssh2stack);
+
          if (cdip->msh2stack == 0 )
          {
             cdip->msh2stack = 0x6002000;

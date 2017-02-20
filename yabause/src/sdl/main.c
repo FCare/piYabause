@@ -212,7 +212,7 @@ void YuiInit() {
 #endif
 	yinit.sndcoretype = SNDCORE_SDL;
 	yinit.cdcoretype = CDCORE_DEFAULT;
-	yinit.carttype = CART_DRAM32MBIT;
+	yinit.carttype = CART_BACKUPRAM32MBIT;
 	yinit.regionid = REGION_EUROPE;
 	yinit.biospath = NULL;
 	yinit.cdpath = NULL;
