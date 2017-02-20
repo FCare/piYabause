@@ -1,0 +1,4 @@
+/common/piYabause/build/src/musashi/CMakeFiles/edit_cache.dir
+/common/piYabause/build/src/musashi/CMakeFiles/rebuild_cache.dir
+/common/piYabause/build/src/musashi/CMakeFiles/musashi.dir
+/common/piYabause/build/src/musashi/CMakeFiles/m68kmake.dir
