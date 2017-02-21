@@ -50,6 +50,7 @@
 #include "bios.h"
 #include "movie.h"
 #include "osdcore.h"
+#include "memory.h"
 #ifdef HAVE_LIBSDL
 #if defined(__APPLE__) || defined(GEKKO)
  #ifdef HAVE_LIBSDL2
@@ -191,8 +192,6 @@ int YabauseInit(yabauseinit_struct *init)
       return -1;
    }
 
-   MappedMemoryInit(MSH2, SSH2);
-
    if (VideoInit(init->vidcoretype) != 0)
    {
       YabSetError(YAB_ERR_CANNOTINIT, _("Video"));
@@ -261,6 +260,7 @@ int YabauseInit(yabauseinit_struct *init)
       return -1;
    }
 
+   MappedMemoryInit(MSH2, SSH2);
    YabauseSetVideoFormat(init->videoformattype);
    YabauseChangeTiming(CLKTYPE_26MHZ);
    yabsys.DecilineMode = 1;
@@ -379,10 +379,6 @@ void YabFlushBackups(void)
 //////////////////////////////////////////////////////////////////////////////
 
 void YabauseDeInit(void) {
-   
-   Vdp2DeInit();
-   Vdp1DeInit();
-   
    SH2DeInit();
 
    if (BiosRom)
@@ -410,6 +406,8 @@ void YabauseDeInit(void) {
    Cs2DeInit();
    ScuDeInit();
    ScspDeInit();
+   Vdp1DeInit();
+   Vdp2DeInit();
    SmpcDeInit();
    PerDeInit();
    VideoDeInit();

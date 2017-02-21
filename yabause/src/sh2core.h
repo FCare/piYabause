@@ -547,8 +547,8 @@ void FASTCALL DataArrayWriteByte(SH2_struct *sh, u32 addr, u8 val);
 void FASTCALL DataArrayWriteWord(SH2_struct *sh, u32 addr, u16 val);
 void FASTCALL DataArrayWriteLong(SH2_struct *sh, u32 addr, u32 val);
 
-void FASTCALL MSH2InputCaptureWriteWord(u32 addr, u16 data);
-void FASTCALL SSH2InputCaptureWriteWord(u32 addr, u16 data);
+void FASTCALL MSH2InputCaptureWriteWord(SH2_struct *sh, u32 addr, u16 data);
+void FASTCALL SSH2InputCaptureWriteWord(SH2_struct *sh, u32 addr, u16 data);
 
 int SH2SaveState(SH2_struct *context, FILE *fp);
 int SH2LoadState(SH2_struct *context, FILE *fp, int version, int size);

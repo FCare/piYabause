@@ -2129,7 +2129,7 @@ void DMATransfer(SH2_struct *sh, u32 *CHCR, u32 *SAR, u32 *DAR, u32 *TCR, u32 *V
 // Input Capture Specific
 //////////////////////////////////////////////////////////////////////////////
 
-void FASTCALL MSH2InputCaptureWriteWord(UNUSED u32 addr, UNUSED u16 data)
+void FASTCALL MSH2InputCaptureWriteWord(SH2_struct *sh, UNUSED u32 addr, UNUSED u16 data)
 {
    // Set Input Capture Flag
    MSH2->onchip.FTCSR |= 0x80;
@@ -2144,7 +2144,7 @@ void FASTCALL MSH2InputCaptureWriteWord(UNUSED u32 addr, UNUSED u16 data)
 
 //////////////////////////////////////////////////////////////////////////////
 
-void FASTCALL SSH2InputCaptureWriteWord(UNUSED u32 addr, UNUSED u16 data)
+void FASTCALL SSH2InputCaptureWriteWord(SH2_struct *sh, UNUSED u32 addr, UNUSED u16 data)
 {
    // Set Input Capture Flag
    SSH2->onchip.FTCSR |= 0x80;

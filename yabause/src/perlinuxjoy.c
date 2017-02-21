@@ -33,6 +33,8 @@ u32  PERLinuxJoyScan(u32 flags);
 void PERLinuxJoyFlush(void);
 void PERLinuxKeyName(u32 key, char * name, int size);
 
+int getSupportedJoy(const char *name);
+
 #define SERVICE_BUTTON_NUMBER 3
 #define SERVICE_BUTTON_EXIT (PERGUN_AXIS+1)
 #define SERVICE_BUTTON_TOGGLE (PERGUN_AXIS+2)
@@ -337,6 +339,7 @@ static void LinuxJoyHandleEvents(perlinuxjoy_struct * joystick)
 {
    struct js_event evt;
    ssize_t num_read;
+   int key;
 
    if (joystick->fd == -1) return;
 
@@ -356,7 +359,7 @@ static void LinuxJoyHandleEvents(perlinuxjoy_struct * joystick)
          else if (evt.value < initvalue) evt.value = -1;
          else evt.value = 1;
       }
-      int key = PACKEVENT(evt, joystick);
+      key = PACKEVENT(evt, joystick);
       if (evt.value != 0)
       {
          if ((key & 0x1FFFF) != 0x1FFFF) PerKeyDown(key);
@@ -373,6 +376,7 @@ static int LinuxJoyScan(perlinuxjoy_struct * joystick)
 {
    struct js_event evt;
    ssize_t num_read;
+   int key;
 
    if (joystick->fd == -1) return 0;
 
@@ -392,7 +396,7 @@ static int LinuxJoyScan(perlinuxjoy_struct * joystick)
       else if (evt.value < initvalue) evt.value = -1;
       else evt.value = 1;
    }
-   int key = PACKEVENT(evt, joystick);
+   key = PACKEVENT(evt, joystick);
    if ((key & 0x1FFFF) != 0x1FFFF)
       return key;
    else return 0;

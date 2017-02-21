@@ -486,7 +486,7 @@ void cache_memory_write_l(SH2_struct *sh, cache_enty * ca, u32 addr, u32 val){
 	}
 }
 
-u32 sh2_cache_refill_read(u32 addr)
+u32 sh2_cache_refill_read(SH2_struct *sh, u32 addr)
 {
    addr &= 0xfffffff;
 
@@ -498,7 +498,7 @@ u32 sh2_cache_refill_read(u32 addr)
    else if (addr >= 0x0100000 && addr <= 0x017ffff)
    {
       //smpc
-      return SmpcReadLong(addr);
+      return SmpcReadLong(MSH2, addr);
    }
    else if (addr >= 0x0180000 && addr <= 0x01fffff)
    {
@@ -523,11 +523,11 @@ u32 sh2_cache_refill_read(u32 addr)
    else if (addr >= 0x2000000 && addr <= 0x3ffffff)
    {
       //cs0
-      return CartridgeArea->Cs0ReadLong(addr);
+      return CartridgeArea->Cs0ReadLong(MSH2, addr);
    }
    else if (addr >= 0x4000000 && addr <= 0x4ffffff)
    {
-      return Cs1ReadLong(addr);
+      return Cs1ReadLong(MSH2, addr);
    }
    else if (addr >= 0x5000000 && addr <= 0x57fffff)
    {
@@ -536,7 +536,7 @@ u32 sh2_cache_refill_read(u32 addr)
    else if (addr >= 0x5800000 && addr <= 0x58fffff)
    {
       //cs2
-         return Cs2ReadLong(addr);
+         return Cs2ReadLong(MSH2, addr);
    }
    else if (addr >= 0x5a00000 && addr <= 0x5afffff)
    {
@@ -599,7 +599,7 @@ void sh2_refill_cache(SH2_struct *sh, cache_enty * ca, int lruway, u32 entry, u3
    sh->cycles += 4;
 
    for (i = 0; i < 16; i += 4) {
-      u32 val = sh2_cache_refill_read((addr & 0xFFFFFFF0) + i);
+      u32 val = sh2_cache_refill_read(sh, (addr & 0xFFFFFFF0) + i);
       ca->way[lruway][entry].data[i + 0] = (val >> 24) & 0xff;
       ca->way[lruway][entry].data[i + 1] = (val >> 16) & 0xff;
       ca->way[lruway][entry].data[i + 2] = (val >> 8) & 0xff;
