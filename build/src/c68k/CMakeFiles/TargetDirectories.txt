@@ -1,4 +1,0 @@
-/common/piYabause/build/src/c68k/CMakeFiles/edit_cache.dir
-/common/piYabause/build/src/c68k/CMakeFiles/c68kinc.dir
-/common/piYabause/build/src/c68k/CMakeFiles/rebuild_cache.dir
-/common/piYabause/build/src/c68k/CMakeFiles/gen68k.dir
