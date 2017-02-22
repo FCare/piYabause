@@ -102,12 +102,6 @@ else()
 	set(yabause_SOURCES ${yabause_SOURCES} yglcache.c)
 endif()
 
-option(YAB_WANT_SH2_CACHE "Enable Sh2 cache emulation" ON)
-if (YAB_WANT_SH2_CACHE)
-    add_definitions(-DCACHE_ENABLE=1)
-    add_definitions(-DEXEC_FROM_CACHE=1)
-endif()
-
 option(YAB_USE_SSF "Include SSF player." ON)
 if (YAB_USE_SSF)
   find_package(ZLIB)
@@ -706,12 +700,6 @@ endif()
 option(YAB_PORT_OSD "Let ports provides their own OSD core list" OFF)
 if (YAB_PORT_OSD)
 	add_definitions(-DYAB_PORT_OSD=1)
-endif()
-
-# Exec from cache
-option(YAB_EXEC_FROM_CACHE "Allow code execution from 0xC0000000" OFF)
-if (YAB_EXEC_FROM_CACHE)
-	add_definitions(-DEXEC_FROM_CACHE=1)
 endif()
 
 # Optimized DMA

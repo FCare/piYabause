@@ -52,7 +52,37 @@ readbytefunc ReadByteList[0x1000];
 readwordfunc ReadWordList[0x1000];
 readlongfunc ReadLongList[0x1000];
 
+writebytefunc MappedMemoryWriteByte;
+writewordfunc MappedMemoryWriteWord;
+writelongfunc MappedMemoryWriteLong;
+
+readbytefunc MappedMemoryReadByte;
+readwordfunc MappedMemoryReadWord;
+readlongfunc MappedMemoryReadLong;
+
 //////////////////////////////////////////////////////////////////////////////
+
+void sh2_set_read_write_funcs()
+{
+   if (yabsys.sh2_cache_enabled)
+   {
+      MappedMemoryReadByte = MappedMemoryReadByteCacheEnabled;
+      MappedMemoryReadWord = MappedMemoryReadWordCacheEnabled;
+      MappedMemoryReadLong = MappedMemoryReadLongCacheEnabled;
+      MappedMemoryWriteByte = MappedMemoryWriteByteCacheEnabled;
+      MappedMemoryWriteWord = MappedMemoryWriteWordCacheEnabled;
+      MappedMemoryWriteLong = MappedMemoryWriteLongCacheEnabled;
+   }
+   else
+   {
+      MappedMemoryReadByte = MappedMemoryReadByteNocache;
+      MappedMemoryReadWord = MappedMemoryReadWordNocache;
+      MappedMemoryReadLong = MappedMemoryReadLongNocache;
+      MappedMemoryWriteByte = MappedMemoryWriteByteNocache;
+      MappedMemoryWriteWord = MappedMemoryWriteWordNocache;
+      MappedMemoryWriteLong = MappedMemoryWriteLongNocache;
+   }
+}
 
 int SH2Init(int coreid)
 {
@@ -77,6 +107,8 @@ int SH2Init(int coreid)
 
    SSH2->onchip.BCR1 = 0x8000;
    SSH2->isslave = 1;
+
+   sh2_set_read_write_funcs();
 
    // So which core do we want?
    if (coreid == SH2CORE_DEFAULT)
@@ -1792,110 +1824,118 @@ void FASTCALL OnchipWriteLong(SH2_struct *sh, u32 addr, u32 val)  {
 //////////////////////////////////////////////////////////////////////////////
 
 u32 FASTCALL AddressArrayReadLong(SH2_struct *sh, u32 addr) {
-#ifdef CACHE_ENABLE
-   int way = (sh->onchip.CCR >> 6) & 3;
-   int entry = (addr & 0x3FC) >> 4;
-   u32 data = sh->onchip.cache.way[way][entry].tag;
-   data |= sh->onchip.cache.lru[entry] << 4;
-   data |= sh->onchip.cache.way[way][entry].v << 2;
-   return data;
-#else
-   return sh->AddressArray[(addr & 0x3FC) >> 2];
-#endif
+   if (yabsys.sh2_cache_enabled)
+   {
+      int way = (sh->onchip.CCR >> 6) & 3;
+      int entry = (addr & 0x3FC) >> 4;
+      u32 data = sh->onchip.cache.way[way][entry].tag;
+      data |= sh->onchip.cache.lru[entry] << 4;
+      data |= sh->onchip.cache.way[way][entry].v << 2;
+      return data;
+   }
+   else
+      return sh->AddressArray[(addr & 0x3FC) >> 2];
 }
 
 //////////////////////////////////////////////////////////////////////////////
 
 void FASTCALL AddressArrayWriteLong(SH2_struct *sh, u32 addr, u32 val)  {
-#ifdef CACHE_ENABLE
-   int way = (sh->onchip.CCR >> 6) & 3;
-   int entry = (addr & 0x3FC) >> 4;
-   sh->onchip.cache.way[way][entry].tag = addr & 0x1FFFFC00;
-   sh->onchip.cache.way[way][entry].v = (addr >> 2) & 1;
-   sh->onchip.cache.lru[entry] = (val >> 4) & 0x3f;
-#else
-   sh->AddressArray[(addr & 0x3FC) >> 2] = val;
-#endif
+   if (yabsys.sh2_cache_enabled)
+   {
+      int way = (sh->onchip.CCR >> 6) & 3;
+      int entry = (addr & 0x3FC) >> 4;
+      sh->onchip.cache.way[way][entry].tag = addr & 0x1FFFFC00;
+      sh->onchip.cache.way[way][entry].v = (addr >> 2) & 1;
+      sh->onchip.cache.lru[entry] = (val >> 4) & 0x3f;
+   }
+   else
+      sh->AddressArray[(addr & 0x3FC) >> 2] = val;
 }
 
 //////////////////////////////////////////////////////////////////////////////
 
 u8 FASTCALL DataArrayReadByte(SH2_struct *sh, u32 addr) {
-#ifdef CACHE_ENABLE
-   int way = (addr >> 10) & 3;
-   int entry = (addr >> 4) & 0x3f;
-   return sh->onchip.cache.way[way][entry].data[addr&0xf];
-#else
-   return T2ReadByte(sh->DataArray, addr & 0xFFF);
-#endif
+   if (yabsys.sh2_cache_enabled)
+   {
+      int way = (addr >> 10) & 3;
+      int entry = (addr >> 4) & 0x3f;
+      return sh->onchip.cache.way[way][entry].data[addr & 0xf];
+   }
+   else
+      return T2ReadByte(sh->DataArray, addr & 0xFFF);
 }
 
 //////////////////////////////////////////////////////////////////////////////
 
 u16 FASTCALL DataArrayReadWord(SH2_struct *sh, u32 addr) {
-#ifdef CACHE_ENABLE
-   int way = (addr >> 10) & 3;
-   int entry = (addr >> 4) & 0x3f;
-   return ((u16)(sh->onchip.cache.way[way][entry].data[addr&0xf]) << 8) | sh->onchip.cache.way[way][entry].data[(addr&0xf) + 1];
-#else
-   return T2ReadWord(sh->DataArray, addr & 0xFFF);
-#endif
+   if (yabsys.sh2_cache_enabled)
+   {
+      int way = (addr >> 10) & 3;
+      int entry = (addr >> 4) & 0x3f;
+      return ((u16)(sh->onchip.cache.way[way][entry].data[addr & 0xf]) << 8) | sh->onchip.cache.way[way][entry].data[(addr & 0xf) + 1];
+   }
+   else
+      return T2ReadWord(sh->DataArray, addr & 0xFFF);
 }
 
 //////////////////////////////////////////////////////////////////////////////
 
 u32 FASTCALL DataArrayReadLong(SH2_struct *sh, u32 addr) {
-#ifdef CACHE_ENABLE
-   int way = (addr >> 10) & 3;
-   int entry = (addr >> 4) & 0x3f;
-   u32 data = ((u32)(sh->onchip.cache.way[way][entry].data[addr&0xf]) << 24) |
-      ((u32)(sh->onchip.cache.way[way][entry].data[(addr& 0xf) + 1]) << 16) |
-      ((u32)(sh->onchip.cache.way[way][entry].data[(addr& 0xf) + 2]) << 8) |
-      ((u32)(sh->onchip.cache.way[way][entry].data[(addr& 0xf) + 3]) << 0);
-   return data;
-#else
-   return T2ReadLong(sh->DataArray, addr & 0xFFF);
-#endif
+   if (yabsys.sh2_cache_enabled)
+   {
+      int way = (addr >> 10) & 3;
+      int entry = (addr >> 4) & 0x3f;
+      u32 data = ((u32)(sh->onchip.cache.way[way][entry].data[addr & 0xf]) << 24) |
+         ((u32)(sh->onchip.cache.way[way][entry].data[(addr & 0xf) + 1]) << 16) |
+         ((u32)(sh->onchip.cache.way[way][entry].data[(addr & 0xf) + 2]) << 8) |
+         ((u32)(sh->onchip.cache.way[way][entry].data[(addr & 0xf) + 3]) << 0);
+      return data;
+   }
+   else
+      return T2ReadLong(sh->DataArray, addr & 0xFFF);
 }
 
 //////////////////////////////////////////////////////////////////////////////
 
 void FASTCALL DataArrayWriteByte(SH2_struct *sh, u32 addr, u8 val)  {
-#ifdef CACHE_ENABLE
-   int way = (addr >> 10) & 3;
-   int entry = (addr >> 4) & 0x3f;
-   sh->onchip.cache.way[way][entry].data[addr&0xf] = val;
-#else
-   T2WriteByte(sh->DataArray, addr & 0xFFF, val);
-#endif
+   if (yabsys.sh2_cache_enabled)
+   {
+      int way = (addr >> 10) & 3;
+      int entry = (addr >> 4) & 0x3f;
+      sh->onchip.cache.way[way][entry].data[addr & 0xf] = val;
+   }
+   else
+      T2WriteByte(sh->DataArray, addr & 0xFFF, val);
 }
 
 //////////////////////////////////////////////////////////////////////////////
 
 void FASTCALL DataArrayWriteWord(SH2_struct *sh, u32 addr, u16 val)  {
-#ifdef CACHE_ENABLE
-   int way = (addr >> 10) & 3;
-   int entry = (addr >> 4) & 0x3f;
-   sh->onchip.cache.way[way][entry].data[addr&0xf] = val >> 8;
-   sh->onchip.cache.way[way][entry].data[(addr&0xf) + 1] = val;
-#else
-   T2WriteWord(sh->DataArray, addr & 0xFFF, val);
-#endif
+   if (yabsys.sh2_cache_enabled)
+   {
+      int way = (addr >> 10) & 3;
+      int entry = (addr >> 4) & 0x3f;
+      sh->onchip.cache.way[way][entry].data[addr & 0xf] = val >> 8;
+      sh->onchip.cache.way[way][entry].data[(addr & 0xf) + 1] = val;
+   }
+   else
+      T2WriteWord(sh->DataArray, addr & 0xFFF, val);
 }
 
 //////////////////////////////////////////////////////////////////////////////
 
 void FASTCALL DataArrayWriteLong(SH2_struct *sh, u32 addr, u32 val)  {
-#ifdef CACHE_ENABLE
-   int way = (addr >> 10) & 3;
-   int entry = (addr >> 4) & 0x3f;
-   sh->onchip.cache.way[way][entry].data[(addr& 0xf)] = ((val >> 24) & 0xFF);
-   sh->onchip.cache.way[way][entry].data[(addr& 0xf) + 1] = ((val >> 16) & 0xFF);
-   sh->onchip.cache.way[way][entry].data[(addr& 0xf) + 2] = ((val >> 8) & 0xFF);
-   sh->onchip.cache.way[way][entry].data[(addr& 0xf) + 3] = ((val >> 0) & 0xFF);
-#else
-   T2WriteLong(sh->DataArray, addr & 0xFFF, val);
-#endif
+   if (yabsys.sh2_cache_enabled)
+   {
+      int way = (addr >> 10) & 3;
+      int entry = (addr >> 4) & 0x3f;
+      sh->onchip.cache.way[way][entry].data[(addr & 0xf)] = ((val >> 24) & 0xFF);
+      sh->onchip.cache.way[way][entry].data[(addr & 0xf) + 1] = ((val >> 16) & 0xFF);
+      sh->onchip.cache.way[way][entry].data[(addr & 0xf) + 2] = ((val >> 8) & 0xFF);
+      sh->onchip.cache.way[way][entry].data[(addr & 0xf) + 3] = ((val >> 0) & 0xFF);
+   }
+   else
+      T2WriteLong(sh->DataArray, addr & 0xFFF, val);
 }
 
 //////////////////////////////////////////////////////////////////////////////

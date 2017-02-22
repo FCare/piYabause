@@ -58,21 +58,8 @@
 #include "vidsoft.h"
 #include "vidogl.h"
 
-u8 FASTCALL MappedMemoryReadByte(SH2_struct *sh, u32 addr);
-u16 FASTCALL MappedMemoryReadWord(SH2_struct *sh, u32 addr);
-u32 FASTCALL MappedMemoryReadLong(SH2_struct *sh, u32 addr);
-void FASTCALL MappedMemoryWriteByte(SH2_struct *sh, u32 addr, u8 val);
-void FASTCALL MappedMemoryWriteWord(SH2_struct *sh, u32 addr, u16 val);
-void FASTCALL MappedMemoryWriteLong(SH2_struct *sh, u32 addr, u32 val);
-
-#if CACHE_ENABLE
-#else
-u8 FASTCALL MappedMemoryReadByteNocache(SH2_struct *sh, u32 addr){ return MappedMemoryReadByte(sh,addr); }
-u16 FASTCALL MappedMemoryReadWordNocache(SH2_struct *sh, u32 addr){ return MappedMemoryReadWord(sh, addr); }
-u32 FASTCALL MappedMemoryReadLongNocache(SH2_struct *sh, u32 addr){ return MappedMemoryReadLong(sh, addr); }
-void FASTCALL MappedMemoryWriteByteNocache(SH2_struct *sh, u32 addr, u8 val){ MappedMemoryWriteByte(sh, addr,val);  }
-void FASTCALL MappedMemoryWriteWordNocache(SH2_struct *sh, u32 addr, u16 val){ MappedMemoryWriteWord(sh, addr, val); }
-void FASTCALL MappedMemoryWriteLongNocache(SH2_struct *sh, u32 addr, u32 val){ MappedMemoryWriteLong(sh, addr, val); }
+#ifdef SH2_TRACE
+#include "sh2trace.h"
 #endif
 
 //////////////////////////////////////////////////////////////////////////////
@@ -756,14 +743,12 @@ void MappedMemoryInit(SH2_struct *msh2, SH2_struct *ssh2)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-#if CACHE_ENABLE
-u8 FASTCALL MappedMemoryReadByte(SH2_struct *sh, u32 addr){
-	return cache_memory_read_b(sh, &sh->onchip.cache, addr);
+
+u8 FASTCALL MappedMemoryReadByteCacheEnabled(SH2_struct *sh, u32 addr) {
+      return cache_memory_read_b(sh, &sh->onchip.cache, addr);
 }
+
 u8 FASTCALL MappedMemoryReadByteNocache(SH2_struct *sh, u32 addr)
-#else
-u8 FASTCALL MappedMemoryReadByte(SH2_struct *sh, u32 addr)
-#endif
 {
    switch (addr >> 29)
    {
@@ -813,14 +798,12 @@ u8 FASTCALL MappedMemoryReadByte(SH2_struct *sh, u32 addr)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-#if CACHE_ENABLE
-u16 FASTCALL MappedMemoryReadWord(SH2_struct *sh, u32 addr){
-	return cache_memory_read_w(sh, &sh->onchip.cache, addr);
+
+u16 FASTCALL MappedMemoryReadWordCacheEnabled(SH2_struct *sh, u32 addr) {
+   return cache_memory_read_w(sh, &sh->onchip.cache, addr);
 }
+
 u16 FASTCALL MappedMemoryReadWordNocache(SH2_struct *sh, u32 addr)
-#else
-u16 FASTCALL MappedMemoryReadWord(SH2_struct *sh, u32 addr)
-#endif
 {
    switch (addr >> 29)
    {
@@ -870,14 +853,12 @@ u16 FASTCALL MappedMemoryReadWord(SH2_struct *sh, u32 addr)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-#if CACHE_ENABLE
-u32 FASTCALL MappedMemoryReadLong(SH2_struct *sh, u32 addr){
-	return cache_memory_read_l(sh, &sh->onchip.cache, addr);
+
+u32 FASTCALL MappedMemoryReadLongCacheEnabled(SH2_struct *sh, u32 addr) {
+   return cache_memory_read_l(sh, &sh->onchip.cache, addr);
 }
+
 u32 FASTCALL MappedMemoryReadLongNocache(SH2_struct *sh, u32 addr)
-#else
-u32 FASTCALL MappedMemoryReadLong(SH2_struct *sh, u32 addr)
-#endif
 {
    switch (addr >> 29)
    {
@@ -931,16 +912,18 @@ u32 FASTCALL MappedMemoryReadLong(SH2_struct *sh, u32 addr)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-#if CACHE_ENABLE
-void FASTCALL MappedMemoryWriteByte(SH2_struct *sh, u32 addr, u8 val){
-	cache_memory_write_b(sh, &sh->onchip.cache,addr,val);
+
+void FASTCALL MappedMemoryWriteByteCacheEnabled(SH2_struct *sh, u32 addr, u8 val) {
+#ifdef SH2_TRACE
+   sh2_trace_writeb(addr, val);
+#endif
+   cache_memory_write_b(sh, &sh->onchip.cache, addr, val);
 }
 void FASTCALL MappedMemoryWriteByteNocache(SH2_struct *sh, u32 addr, u8 val)
-#else
-void FASTCALL MappedMemoryWriteByte(SH2_struct *sh, u32 addr, u8 val)
-#endif
 {
-
+#ifdef SH2_TRACE
+   sh2_trace_writeb(addr, val);
+#endif
    switch (addr >> 29)
    {
       case 0x0:
@@ -991,15 +974,19 @@ void FASTCALL MappedMemoryWriteByte(SH2_struct *sh, u32 addr, u8 val)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-#if CACHE_ENABLE
-void FASTCALL MappedMemoryWriteWord(SH2_struct *sh, u32 addr, u16 val){
-	cache_memory_write_w(sh, &sh->onchip.cache, addr, val);
-}
-void FASTCALL MappedMemoryWriteWordNocache(SH2_struct *sh, u32 addr, u16 val)
-#else
-void FASTCALL MappedMemoryWriteWord(SH2_struct *sh, u32 addr, u16 val)
+
+void FASTCALL MappedMemoryWriteWordCacheEnabled(SH2_struct *sh, u32 addr, u16 val) {
+#ifdef SH2_TRACE
+   sh2_trace_writew(addr, val);
 #endif
+   cache_memory_write_w(sh, &sh->onchip.cache, addr, val);
+}
+
+void FASTCALL MappedMemoryWriteWordNocache(SH2_struct *sh, u32 addr, u16 val)
 {
+#ifdef SH2_TRACE
+   sh2_trace_writew(addr, val);
+#endif
    switch (addr >> 29)
    {
       case 0x0:
@@ -1050,15 +1037,19 @@ void FASTCALL MappedMemoryWriteWord(SH2_struct *sh, u32 addr, u16 val)
 }
 
 //////////////////////////////////////////////////////////////////////////////
-#if CACHE_ENABLE
-void FASTCALL MappedMemoryWriteLong(SH2_struct *sh, u32 addr, u32 val){
-	cache_memory_write_l(sh, &sh->onchip.cache, addr, val);
-}
-void FASTCALL MappedMemoryWriteLongNocache(SH2_struct *sh, u32 addr, u32 val)
-#else
-void FASTCALL MappedMemoryWriteLong(SH2_struct *sh, u32 addr, u32 val)
+
+void FASTCALL MappedMemoryWriteLongCacheEnabled(SH2_struct *sh, u32 addr, u32 val) {
+#ifdef SH2_TRACE
+   sh2_trace_writel(addr, val);
 #endif
+   cache_memory_write_l(sh, &sh->onchip.cache, addr, val);
+}
+
+void FASTCALL MappedMemoryWriteLongNocache(SH2_struct *sh, u32 addr, u32 val)
 {
+#ifdef SH2_TRACE
+   sh2_trace_writel(addr, val);
+#endif
    switch (addr >> 29)
    {
       case 0x0:

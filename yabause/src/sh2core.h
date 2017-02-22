@@ -351,13 +351,21 @@ typedef struct
 
 typedef struct SH2Interface_struct_s SH2Interface_struct;
 
-extern  writebytefunc WriteByteList[0x1000];
+extern   writebytefunc WriteByteList[0x1000];
 extern   writewordfunc WriteWordList[0x1000];
 extern   writelongfunc WriteLongList[0x1000];
 
 extern   readbytefunc ReadByteList[0x1000];
 extern   readwordfunc ReadWordList[0x1000];
 extern   readlongfunc ReadLongList[0x1000];
+
+extern   writebytefunc MappedMemoryWriteByte;
+extern   writewordfunc MappedMemoryWriteWord;
+extern   writelongfunc MappedMemoryWriteLong;
+
+extern   readbytefunc MappedMemoryReadByte;
+extern   readwordfunc MappedMemoryReadWord;
+extern   readlongfunc MappedMemoryReadLong;
 
 typedef struct SH2_struct_s
 {

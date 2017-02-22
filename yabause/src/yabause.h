@@ -56,6 +56,7 @@ typedef struct
    int play_ssf;
    int use_new_scsp;
    int resolution_mode;
+   int sh2_cache_enabled;
 } yabauseinit_struct;
 
 #define CLKTYPE_26MHZ           0
@@ -109,6 +110,7 @@ typedef struct
    int usequickload;
    int wait_line_count;
    int playing_ssf;
+   int sh2_cache_enabled;
 } yabsys_struct;
 
 extern yabsys_struct yabsys;

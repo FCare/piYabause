@@ -24,8 +24,6 @@
 #include <stdlib.h>
 #include "core.h"
 
-#define CACHE_ENABLE 1 
-
 typedef struct SH2_struct_s SH2_struct;
 
 /* Type 1 Memory, faster for byte (8 bits) accesses */
@@ -357,13 +355,6 @@ extern u32 FASTCALL MappedMemoryReadLongNocache(SH2_struct *sh, u32 addr);
 extern void FASTCALL MappedMemoryWriteByteNocache(SH2_struct *sh, u32 addr, u8 val);
 extern void FASTCALL MappedMemoryWriteWordNocache(SH2_struct *sh, u32 addr, u16 val);
 extern void FASTCALL MappedMemoryWriteLongNocache(SH2_struct *sh, u32 addr, u32 val);
-
-extern u8 FASTCALL MappedMemoryReadByte(SH2_struct *sh, u32 addr);
-extern u16 FASTCALL MappedMemoryReadWord(SH2_struct *sh, u32 addr);
-extern u32 FASTCALL MappedMemoryReadLong(SH2_struct *sh, u32 addr);
-extern void FASTCALL MappedMemoryWriteByte(SH2_struct *sh, u32 addr, u8 val);
-extern void FASTCALL MappedMemoryWriteWord(SH2_struct *sh, u32 addr, u16 val);
-extern void FASTCALL MappedMemoryWriteLong(SH2_struct *sh, u32 addr, u32 val);
 #ifdef __cplusplus
 }
 #endif
