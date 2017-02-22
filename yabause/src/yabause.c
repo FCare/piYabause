@@ -899,16 +899,16 @@ void YabauseSpeedySetup(void)
       MappedMemoryWriteLongNocache(MSH2, 0x0600023C, 0x00000350);
       MappedMemoryWriteLongNocache(MSH2, 0x06000240, 0x32524459);
       MappedMemoryWriteLongNocache(MSH2, 0x0600024C, 0x00000000);
-      MappedMemoryWriteLongNocache(MSH2, 0x06000268, MappedMemoryReadLong(MSH2, 0x00001344));
-      MappedMemoryWriteLongNocache(MSH2, 0x0600026C, MappedMemoryReadLong(MSH2, 0x00001348));
-      MappedMemoryWriteLongNocache(MSH2, 0x0600029C, MappedMemoryReadLong(MSH2, 0x00001354));
-      MappedMemoryWriteLongNocache(MSH2, 0x060002C4, MappedMemoryReadLong(MSH2, 0x00001104));
-      MappedMemoryWriteLongNocache(MSH2, 0x060002C8, MappedMemoryReadLong(MSH2, 0x00001108));
-      MappedMemoryWriteLongNocache(MSH2, 0x060002CC, MappedMemoryReadLong(MSH2, 0x0000110C));
-      MappedMemoryWriteLongNocache(MSH2, 0x060002D0, MappedMemoryReadLong(MSH2, 0x00001110));
-      MappedMemoryWriteLongNocache(MSH2, 0x060002D4, MappedMemoryReadLong(MSH2, 0x00001114));
-      MappedMemoryWriteLongNocache(MSH2, 0x060002D8, MappedMemoryReadLong(MSH2, 0x00001118));
-      MappedMemoryWriteLongNocache(MSH2, 0x060002DC, MappedMemoryReadLong(MSH2, 0x0000111C));
+      MappedMemoryWriteLongNocache(MSH2, 0x06000268, MappedMemoryReadLongNocache(MSH2, 0x00001344));
+      MappedMemoryWriteLongNocache(MSH2, 0x0600026C, MappedMemoryReadLongNocache(MSH2, 0x00001348));
+      MappedMemoryWriteLongNocache(MSH2, 0x0600029C, MappedMemoryReadLongNocache(MSH2, 0x00001354));
+      MappedMemoryWriteLongNocache(MSH2, 0x060002C4, MappedMemoryReadLongNocache(MSH2, 0x00001104));
+      MappedMemoryWriteLongNocache(MSH2, 0x060002C8, MappedMemoryReadLongNocache(MSH2, 0x00001108));
+      MappedMemoryWriteLongNocache(MSH2, 0x060002CC, MappedMemoryReadLongNocache(MSH2, 0x0000110C));
+      MappedMemoryWriteLongNocache(MSH2, 0x060002D0, MappedMemoryReadLongNocache(MSH2, 0x00001110));
+      MappedMemoryWriteLongNocache(MSH2, 0x060002D4, MappedMemoryReadLongNocache(MSH2, 0x00001114));
+      MappedMemoryWriteLongNocache(MSH2, 0x060002D8, MappedMemoryReadLongNocache(MSH2, 0x00001118));
+      MappedMemoryWriteLongNocache(MSH2, 0x060002DC, MappedMemoryReadLongNocache(MSH2, 0x0000111C));
       MappedMemoryWriteLongNocache(MSH2, 0x06000328, 0x000004C8);
       MappedMemoryWriteLongNocache(MSH2, 0x0600032C, 0x00001800);
 

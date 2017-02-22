@@ -145,7 +145,7 @@ static u32 FASTCALL FetchCs0(SH2_struct *sh, u32 addr)
 #if CACHE_ENABLE
    return cache_memory_read_w(sh, &sh->onchip.cache, addr);
 #else
-   return CartridgeArea->Cs0ReadWord(addr);
+   return CartridgeArea->Cs0ReadWord(sh, addr);
 #endif
 }
 
@@ -1384,7 +1384,9 @@ static void FASTCALL SH2movli(SH2_struct * sh)
 
 static void FASTCALL SH2movll(SH2_struct * sh)
 {
-   sh->regs.R[INSTRUCTION_B(sh->instruction)] = MappedMemoryReadLong(sh, sh->regs.R[INSTRUCTION_C(sh->instruction)]);
+   u32 addr = sh->regs.R[INSTRUCTION_C(sh->instruction)];
+
+   sh->regs.R[INSTRUCTION_B(sh->instruction)] = MappedMemoryReadLong(sh, addr);
    sh->regs.PC += 2;
    sh->cycles++;
 }
@@ -1521,8 +1523,9 @@ static void FASTCALL SH2movwl(SH2_struct * sh)
 {
    s32 m = INSTRUCTION_C(sh->instruction);
    s32 n = INSTRUCTION_B(sh->instruction);
+   u32 addr = sh->regs.R[m];
 
-   sh->regs.R[n] = (s32)(s16)MappedMemoryReadWord(sh, sh->regs.R[m]);
+   sh->regs.R[n] = (s32)(s16)MappedMemoryReadWord(sh, addr);
    sh->regs.PC += 2;
    sh->cycles++;
 }
