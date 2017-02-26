@@ -25,6 +25,12 @@
 
 UIHexEditor::UIHexEditor( QWidget* p )
 {
+	proc = UIDebugCPU::PROC_MSH2;
+	rebuildTabs();
+}
+
+void UIHexEditor::rebuildTabs()
+{
    QList<QString> tabList;
    QList<u32> startList;
    QList<u32> endList;
@@ -40,6 +46,7 @@ UIHexEditor::UIHexEditor( QWidget* p )
    for (int i=0; i < tabList.count(); i++)
    {
       UIHexEditorWnd *hexEditorWnd = new UIHexEditorWnd (this);
+      hexEditorWnd->setProc(proc);
       hexEditorWnd->setStartAddress(startList[i]);
       hexEditorWnd->setEndAddress(endList[i]);
       addTab(hexEditorWnd, tabList[i]);
@@ -63,6 +70,12 @@ u32 UIHexEditor::getEndAddress()
 {
    UIHexEditorWnd *hexEditorWnd=(UIHexEditorWnd *)currentWidget();
    return hexEditorWnd->getEndAddress();
+}
+
+void UIHexEditor::setProc( UIDebugCPU::PROCTYPE proc )
+{
+   this->proc = proc;
+   rebuildTabs();
 }
 
 bool UIHexEditor::saveSelected( QString filename )
@@ -107,7 +120,6 @@ UIHexEditorWnd::UIHexEditorWnd( QWidget* p )
    setMouseTracking(true);
 }
 
-
 void UIHexEditorWnd::sliderUpdate(int value)
 {
    setCursorPos(cursorAddr);
@@ -146,6 +158,11 @@ u32 UIHexEditorWnd::getAddress()
    return cursorAddr;
 }
 
+void UIHexEditorWnd::setProc( UIDebugCPU::PROCTYPE proc )
+{
+   this->proc = proc;
+}
+
 void UIHexEditorWnd::setFont(const QFont &font)
 {
    QWidget::setFont(font);
@@ -170,9 +187,9 @@ u8 UIHexEditorWnd::readByte(u32 addr)
 {
    if ((addr >= 0x05D00000 && addr < 0x05D80000) ||
       (addr >= 0x05F80000 && addr < 0x05FC0000))
-      return MappedMemoryReadWord(addr & (~0x1)) >> ((1-(addr & 0x1))<<3);
+      return MappedMemoryReadWordNocache(MSH2, addr & (~0x1)) >> ((1-(addr & 0x1))<<3);
    else
-      return MappedMemoryReadByte(addr);
+      return MappedMemoryReadByteNocache(MSH2, addr);
 }
 
 void UIHexEditorWnd::writeByte(u32 addr, u8 val)
@@ -180,12 +197,12 @@ void UIHexEditorWnd::writeByte(u32 addr, u8 val)
    if ((addr >= 0x05D00000 && addr < 0x05D80000) ||
       (addr >= 0x05F80000 && addr < 0x05FC0000))
    {
-      u16 word = MappedMemoryReadWord(addr & (~0x1)) & (0xFF << ((addr & 0x1)<<3) );
+      u16 word = MappedMemoryReadWordNocache(MSH2, addr & (~0x1)) & (0xFF << ((addr & 0x1)<<3) );
       word |= (val << ((1-(addr & 0x1))<<3));
-      MappedMemoryWriteWord(addr & (~0x1), word);
+      MappedMemoryWriteWordNocache(MSH2, addr & (~0x1), word);
    }
    else
-      MappedMemoryWriteByte(addr, val);
+      MappedMemoryWriteByteNocache(MSH2, addr, val);
 }
 
 void UIHexEditorWnd::clear(u32 index, int len)
