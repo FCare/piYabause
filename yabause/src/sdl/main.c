@@ -20,6 +20,7 @@
 */
 
 #include <assert.h>
+#include <unistd.h>
 #if defined(_USEGLEW_)
 #include <GL/glew.h>
 #endif
