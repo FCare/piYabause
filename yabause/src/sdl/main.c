@@ -21,6 +21,7 @@
 
 #include <assert.h>
 #include <unistd.h>
+#include <sys/time.h>
 #if defined(_USEGLEW_)
 #include <GL/glew.h>
 #endif
